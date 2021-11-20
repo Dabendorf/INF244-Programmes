@@ -1,0 +1,17 @@
+##########################################################
+### Run channels
+# AWGN
+# 0.5 = n_0 (sigma), 0.3 = energy level
+python ChannelAWGN.py uib.png 0.5 0.3 png
+python ChannelAWGN.py Mondrian.csv 0.5 0.3 csv
+----------------------------------------------------------
+# BSC
+# 0.1 = prob
+python ChannelBSC.py uib.png 0.1 png
+python ChannelBSC.py Mondrian.csv 0.1 csv
+----------------------------------------------------------
+# BEC
+# 0.1 = prob
+python ChannelBEC.py uib.png 0.1 png
+python ChannelBEC.py Mondrian.csv 0.1 csv
+----------------------------------------------------------
