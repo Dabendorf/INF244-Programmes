@@ -31,3 +31,19 @@ python ConvFinal.py 1 2 1111S1011 1011011
 # Old programme, sometimes not working, but for checking
 python ConvOld.py k n b m
 python ConvOld.py 1 2 1111S1011 1011011
+
+##########################################################
+### Turbo encoder
+python TurboEncoder.py 1S1101 csv Sequence.csv Permutation.csv
+python TurboEncoder.py 1S1101 str 10110 4S5S3S1S2
+
+##########################################################
+### Viterbi
+python Viterbi.py 1 2 bsc 111S101 000111011001110000
+python Viterbi.py 1 2 bsc 111S001 000111011001110000
+python Viterbi.py 2 3 bsc 111S11S101S1S01S11 111000011100000100
+python Viterbi.py 1 2 bec 111S101 2220111222
+python Viterbi.py 1 2 awgn 111S101 -0.3S0.0S-0.9S0.2S0.9S0.6S1.1S-0.7S1.4S1.1
+
+##########################################################
+### LDPC Decoder

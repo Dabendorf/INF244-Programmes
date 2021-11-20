@@ -209,14 +209,22 @@ class Viterbi:
 			for state in s_d[d]:
 				v_p = dict()
 				for pre in p_d[d][state]:
+					print("====================")
 					# Calc output bits
 					c_d = get_output_bits[(pre, state)]
 					#if channel_mode != "awgn":
-					v_p[pre] = o[pre] + self.error_metric(r = self.r[d*n:(d+1)*n], tested_sequence = c_d, mode=channel_mode)
+					err_met = self.error_metric(r = self.r[d*n:(d+1)*n], tested_sequence = c_d, mode=channel_mode)
+					v_p[pre] = o[pre] + err_met
+					print("Arrow from state "+str(pre)+" to "+state+"; inp/outp: "+str("?")+"/"+str(c_d))
+					print("Error calc: "+"{0:.{1}f}".format(o[pre], 2)+" + "+"{0:.{1}f}".format(err_met, 2)+" = "+"{0:.{1}f}".format(v_p[pre], 2))
+					
 					#else:
 						#v_p[pre] = o[pre] + self.error_metric(r = awgn_list[d*n:(d+1)*n], tested_sequence = c_d, mode=channel_mode)
 
 				p_0 = min(v_p, key = v_p.get)
+				print("Elimination for state "+str(state)+" at depth "+str(d))
+				print(v_p)
+				print("Keep: "+str(p_0))
 				lab2[state] = (lab[p_0] + state)
 				o2[state] = v_p[p_0]
 
@@ -243,27 +251,40 @@ class Viterbi:
 			BEC: 
 			AWGN:
 		"""
+		print("Error metric")
+		print("Received: "+str(r))
+		print("To compare (path): "+str(tested_sequence))
 		if mode=="bsc":
 			counter = 0
 			for i in range(len(r)):
 				if str(r[i]) != tested_sequence[i]:
 					counter += 1
+			print("Bits wrong: "+str(counter))
 
 			return counter
 		elif mode=="bec":
 			counter = 0
 			for i in range(len(r)):
-				if str(r[i]) != tested_sequence[i]:
+				if str(r[i]) != tested_sequence[i] and r[i]!="2":
 					counter += 100000
+				elif str(r[i]) != tested_sequence[i]:
+					counter += 1
+
+			if counter > 10000:
+				print("infinity")
+			else:
+				print("Bits wrong: "+str(counter))
 
 			return counter
 		elif mode=="awgn":
-			print("Error metric")
-			print(r)
-			print(tested_sequence)
 			sum = 0
+			output_str = ""
 			for i in range(len(r)):
-				sum += (abs(r[i]-float(tested_sequence[i]))**2)
+				to_add = (abs(r[i]-float(tested_sequence[i]))**2)
+				sum += to_add
+				output_str += "+("+str(r[i])+"-"+str(float(tested_sequence[i]))+")^2"
+			output_str += " = {0:.{1}f}".format(sum, 2)
+			print(output_str)
 			return sum
 		else:
 			print("Abortion error: Choose channel from {bsc, bec, awgn}")
@@ -288,6 +309,8 @@ def multi_xor(a: int) -> int:
 # python Viterbi.py 1 2 bsc 111S101 000111011001110000
 # python Viterbi.py 1 2 bsc 111S001 000111011001110000
 # python Viterbi.py 2 3 bsc 111S11S101S1S01S11 111000011100000100
+# python Viterbi.py 1 2 bec 111S101 2220111222
+# python Viterbi.py 1 2 awgn 111S101 -0.3S0.0S-0.9S0.2S0.9S0.6S1.1S-0.7S1.4S1.1
 def main():
 	# START - Ugly Code from Assignment 1
 	k = int(sys.argv[1])
@@ -355,7 +378,6 @@ def main():
 
 	# Decoding
 	print("Viterbi, mode: "+channel)
-	print(seq)
 	vit = Viterbi(conv.next_state_matrix, conv.trans_matrix, seq, conv.big_state_list, n, channel)
 	mhat = vit.result
 
