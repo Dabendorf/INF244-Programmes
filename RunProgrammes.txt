@@ -23,3 +23,11 @@ python Repcode.py Mondrian.csv 5 bec 0.3
 python Repcode.py Mondrian.csv 5 awgn 0.6
 
 ##########################################################
+### Convolutional encoder
+# python ConvFinal.py k n matrix seq
+python ConvFinal.py 1 2 111S101 100100
+python ConvFinal.py 1 2 1111S1011 1011011
+
+# Old programme, sometimes not working, but for checking
+python ConvOld.py k n b m
+python ConvOld.py 1 2 1111S1011 1011011
