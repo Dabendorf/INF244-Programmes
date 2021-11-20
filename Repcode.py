@@ -145,6 +145,9 @@ def calc_changes(list1: List[int], list2: List[int]) -> float:
 # param is the crossover probability for bsc and bec
 # or E_b/N_O for AWGN
 # python Repcode.py Mondrian.csv 5 channelname param
+# python Repcode.py Mondrian.csv 5 bsc 0.3
+# python Repcode.py Mondrian.csv 5 bec 0.3
+# python Repcode.py Mondrian.csv 5 awgn 0.6
 def main():
 	# Same input code as for those in task 2
 	df = pd.read_csv(sys.argv[1], sep=',',header=None, dtype=int)

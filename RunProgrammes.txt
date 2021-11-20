@@ -14,4 +14,12 @@ python ChannelBSC.py Mondrian.csv 0.1 csv
 # 0.1 = prob
 python ChannelBEC.py uib.png 0.1 png
 python ChannelBEC.py Mondrian.csv 0.1 csv
-----------------------------------------------------------
+
+##########################################################
+### Repetitional code
+# 0.3 = prob for BEC/BSC, 0.6 = E_b/N_0 for AWGN
+python Repcode.py Mondrian.csv 5 bsc 0.3
+python Repcode.py Mondrian.csv 5 bec 0.3
+python Repcode.py Mondrian.csv 5 awgn 0.6
+
+##########################################################
