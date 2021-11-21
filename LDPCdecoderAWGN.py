@@ -35,19 +35,14 @@ def gallager(G: np.ndarray, H: np.ndarray, r: List[int], N0: float, debug_mode =
 	for j in range(n):
 		# AWGN
 		L_j[j] = ((4*1)/N0)*r[j]
-		# BEC
-		"""if r[j] == 0:
-			L_j[j] = -10000
-		elif r[j] == 1:
-			L_j[j] = 10000
-		else:
-			L_j[j] = 0"""
 
 		for i in M_dict[j]:
 			L_j_i[(j, i)] = L_j[j]
 	
 	codeword = False
-
+	if debug_mode:
+		print("Initial variable nodes (L_v-matrix; index: (x,y)=(width,height)): ")
+		print(L_j_i)
 	counter = 0
 	while not codeword:
 		counter += 1
@@ -58,6 +53,9 @@ def gallager(G: np.ndarray, H: np.ndarray, r: List[int], N0: float, debug_mode =
 			# Compute L_i_j
 			L_i_j[(i, j)] = compute_checknode_gallager(N = N_dict[i], L_j_i = L_j_i, i=i, j=j, debug_mode=debug_mode)
 		
+		if debug_mode:
+			print("Check nodes (L_c-matrix; index: (x,y)=(height,width) (index swapped)): ")
+			print(L_i_j)
 		# Variable node update
 		# print(non_empty_H_j_i)
 		for (j, i) in non_empty_H_j_i:
@@ -66,6 +64,12 @@ def gallager(G: np.ndarray, H: np.ndarray, r: List[int], N0: float, debug_mode =
 			vhat[j] = (np.sign(L_j_tot[j])+1) / 2
 			L_j_i[(j, i)] = compute_l_j_i(M = M_dict[j], L_i_j = L_i_j, i = i, j = j, Lj = L_j[j])
 		
+		if debug_mode:
+			print("Variable nodes (L_v-matrix; index: (x,y)=(width,height)): ")
+			print(L_j_i)
+			print("L_j_tot: ")
+			print(np.array([L_j_tot[key] for key in sorted(L_j_tot.keys())]))
+			
 		# Check termination condition
 		vhat_list = np.array([vhat[key] for key in sorted(vhat.keys())])
 		# vhat = (vhat_1 ... vhat_n)
@@ -120,7 +124,6 @@ def compute_l_j_i(M: List[int], L_i_j, i: int, j: int, Lj: float):
 			sum += L_i_j[(i2, j)]
 
 	return sum + Lj
-
 
 def calc_neighbourhood(H: np.ndarray) -> Tuple[Dict[int, List[int]], Dict[int, List[int]]]:
 	""" Calculates the neighbourhood for each variable node and checknode and returns two dictionaries
