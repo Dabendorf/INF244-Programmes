@@ -325,17 +325,20 @@ def main():
 	print("Sequence: "+str(r))
 
 	# Gallager decoding
+	print("===========\nCalculate gallager")
 	vhat__gallager = gallager(G, H, r, prob, debug_mode=debug_mode)
 	print("vhat gallager")
 	print(vhat__gallager)
 	
 	# MinSum decoding
+	print("===========\nCalculate minsum")
 	vhat_minsum = minSum(G, H, r, prob, debug_mode=debug_mode)
 	print("vhat minsum")
 	print(vhat_minsum)
 
 	# Maximum-likelihood decoding
-	"""mhat_mldec = mldecoder(G, r, comb_list)
+	"""print("===========\nCalculate mldecoder")
+	mhat_mldec = mldecoder(G, r, comb_list)
 	print("mhat max likelihood")
 	print(mhat_mldec)"""
 

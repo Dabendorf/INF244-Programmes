@@ -173,13 +173,6 @@ def minSum(G: np.ndarray, H: np.ndarray, r: List[int], N0: float, debug_mode = F
 	for j in range(n):
 		# AWGN
 		L_j[j] = ((4*1)/N0)*r[j] # change for task 4
-		# BEC
-		"""if r[j] == 0:
-			L_j[j] = -10000
-		elif r[j] == 1:
-			L_j[j] = 10000
-		else:
-			L_j[j] = 0"""
 
 		for i in M_dict[j]:
 			L_j_i[(j, i)] = L_j[j]
@@ -329,16 +322,19 @@ def main():
 	print("Sequence: "+str(r))
 
 	# Gallager decoding
+	print("===========\nCalculate gallager")
 	vhat__gallager = gallager(G, H, r, N0, debug_mode=debug_mode)
 	print("vhat gallager")
 	print(vhat__gallager)
 	
 	# MinSum decoding
+	print("===========\nCalculate minsum")
 	vhat_minsum = minSum(G, H, r, N0, debug_mode=debug_mode)
 	print("vhat minsum")
 	print(vhat_minsum)
 
 	# Maximum-likelihood decoding
+	print("===========\nCalculate mldecoder")
 	mhat_mldec = mldecoder(G, r, comb_list)
 	print("mhat max likelihood")
 	print(mhat_mldec)
