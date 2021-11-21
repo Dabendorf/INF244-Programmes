@@ -47,3 +47,20 @@ python Viterbi.py 1 2 awgn 111S101 -0.3S0.0S-0.9S0.2S0.9S0.6S1.1S-0.7S1.4S1.1
 
 ##########################################################
 ### LDPC Decoder
+# AWGN 
+# G can actually be a dummy if no mhat decoding necessary
+# That will make max likelihood useless
+# python LDPCdecoderAWGN.py systematic paritycheck sequence N0 debug_mode
+# python LDPCdecoderAWGN.py G H r N0 debug_mode
+python LDPCdecoderAWGN.py G.csv H4.csv -0.2S0.3S-1.2S0.5S-0.8S-0.6S1.1 4 True
+----------------------------------------------------------
+# BSC
+# python LDPCdecoderBSC.py systematic paritycheck sequence probability debug_mode
+# python LDPCdecoderBSC.py G H r prob debug_mode
+python LDPCdecoderBSC.py G.csv H_bec_lecturenotes.csv 011111 0.25 True
+----------------------------------------------------------
+# BEC
+# python LDPCdecoderBEC.py systematic paritycheck sequence probability debug_mode
+# python LDPCdecoderBEC.py G H r prob debug_mode
+python LDPCdecoderBEC.py G.csv H_bec_lecturenotes.csv 020212 0.25 True
+##########################################################

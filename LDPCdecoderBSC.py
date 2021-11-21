@@ -32,19 +32,10 @@ def gallager(G: np.ndarray, H: np.ndarray, r: List[int], prob:float, debug_mode 
 	vhat = dict()
 	L_j_tot = dict()
 	for j in range(n):
-		# AWGN
-		# L_j[j] = (((4*1)/N0)*r[j])
 		# BSC
 		a = ((-1) ** r[j])
 		b = math.log(prob/(1-prob))
 		L_j[j] = a * b
-		# BEC
-		"""if r[j] == 0:
-			L_j[j] = -10000
-		elif r[j] == 1:
-			L_j[j] = 10000
-		else:
-			L_j[j] = 0"""
 
 		for i in M_dict[j]:
 			L_j_i[(j, i)] = L_j[j]
@@ -174,16 +165,8 @@ def minSum(G: np.ndarray, H: np.ndarray, r: List[int], prob: float, debug_mode =
 	vhat = dict()
 	L_j_tot = dict()
 	for j in range(n):
-		# AWGN
-		# L_j[j] = (((4*1)/N0)*r[j])
 		# BSC
 		L_j[j] = (-1) ** r[j] * math.log(prob/(1-prob))
-		"""if r[j] == 0:
-			L_j[j] = -10000
-		elif r[j] == 1:
-			L_j[j] = 10000
-		else:
-			L_j[j] = 0"""
 
 		for i in M_dict[j]:
 			L_j_i[(j, i)] = L_j[j]
@@ -286,7 +269,7 @@ def mldecoder(G, r, comb):
 # Usage
 # python LDPCdecoderBSC.py systematic paritycheck sequence probability debug_mode
 # python LDPCdecoderBSC.py G H r prob debug_mode
-# python LDPCdecoderBSC.py G.csv H.csv 011010101 0.3 True
+# python LDPCdecoderBSC.py G.csv H_bec_lecturenotes.csv 011111 0.25 False
 def main():
 	G = np.loadtxt(sys.argv[1], delimiter=",", dtype=float)
 	H = np.loadtxt(sys.argv[2], delimiter=",", dtype=float)

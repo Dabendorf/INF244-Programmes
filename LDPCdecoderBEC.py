@@ -32,19 +32,11 @@ def gallager(G: np.ndarray, H: np.ndarray, r: List[int], prob:float, debug_mode 
 	vhat = dict()
 	L_j_tot = dict()
 
-	num_dict = {("tanh", 10*10):1, ("tanh", -10*10):-1, ("arctanh", 1):10*10, ("arctanh", -1):-10*10}
 	for j in range(n):
-		# AWGN
-		# L_j[j] = (((4*1)/N0)*r[j])
-		# BSC
-		#a = ((-1) ** r[j])
-		#b = math.log(prob/(1-prob))
-		#L_j[j] = a * b
-		# BEC
 		if r[j] == 0:
-			L_j[j] = -10**10
+			L_j[j] = float('-inf')
 		elif r[j] == 1:
-			L_j[j] = 10**10
+			L_j[j] = float('inf')
 		else:
 			L_j[j] = 0
 
@@ -95,7 +87,12 @@ def compute_checknode_gallager(N: List[int], L_j_i, i: int, j: int):
 		if j2 != j:
 			atan_mult *= math.tanh(L_j_i[(j2, i)] / 2)
 
-	return temp * math.atanh(atan_mult)
+	if atan_mult == 1.0:
+		return temp * math.atanh(0.999)
+	elif atan_mult == -1.0:
+		return temp * math.atanh(-0.999)
+	else:
+		return temp * math.atanh(atan_mult)
 
 def compute_l_j_tot(M: List[int], L_i_j, j: int, Lj: float):
 	"""Calculates l_j^tot for a given L_j"""
@@ -150,7 +147,7 @@ def calc_non_zero(H: np.ndarray) -> Tuple[int, int]:
 
 	return non_zero_list
 
-def minSum(G: np.ndarray, H: np.ndarray, r: List[int], N0: float, prob: float, debug_mode = False) -> List[int]:
+def minSum(G: np.ndarray, H: np.ndarray, r: List[int], prob: float, debug_mode = False) -> List[int]:
 	""" Min sum algorithm algorithm for AWGN
 		Only difference to Gallager is a different function for check node computation
 		G: matrix G of size nxk
@@ -176,16 +173,13 @@ def minSum(G: np.ndarray, H: np.ndarray, r: List[int], N0: float, prob: float, d
 	vhat = dict()
 	L_j_tot = dict()
 	for j in range(n):
-		# AWGN
-		# L_j[j] = (((4*1)/N0)*r[j])
-		# BSC
-		L_j[j] = (-1) ** r[j] * math.log(prob/(1-prob))
-		"""if r[j] == 0:
-			L_j[j] = -10000
+		# BEC
+		if r[j] == 0:
+			L_j[j] = float('-inf')
 		elif r[j] == 1:
-			L_j[j] = 10000
+			L_j[j] = float('inf')
 		else:
-			L_j[j] = 0"""
+			L_j[j] = 0
 
 		for i in M_dict[j]:
 			L_j_i[(j, i)] = L_j[j]
@@ -288,7 +282,7 @@ def mldecoder(G, r, comb):
 # Usage
 # python LDPCdecoderBEC.py systematic paritycheck sequence probability debug_mode
 # python LDPCdecoderBEC.py G H r prob debug_mode
-# python LDPCdecoderBEC.py G.csv H.csv 2211012102 0.3 True
+# python LDPCdecoderBEC.py G.csv H_bec_lecturenotes.csv 020212 0.25 False
 def main():
 	G = np.loadtxt(sys.argv[1], delimiter=",", dtype=float)
 	H = np.loadtxt(sys.argv[2], delimiter=",", dtype=float)
@@ -327,7 +321,7 @@ def main():
 	# N0 = 4
 
 	# Init
-	print("Mode: BSC (prob = "+str(prob)+")")
+	print("Mode: BEC (prob = "+str(prob)+")")
 	print("Sequence: "+str(r))
 
 	# Gallager decoding
