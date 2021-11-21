@@ -79,10 +79,18 @@ def compute_checknode_gallager(N: List[int], L_j_i, i: int, j: int, debug_mode=F
 	"""Calculate the checknodes for the gallager algorithm"""
 	temp = (-1) ** len(N) * 2
 
+	product_str = ""
 	atan_mult = 1
 	for j2 in N:
 		if j2 != j:
-			atan_mult *= math.tanh(L_j_i[(j2, i)] / 2)
+			val = math.tanh(L_j_i[(j2, i)] / 2)
+			product_str += (" * tanh("+str(L_j_i[(j2, i)])+"/2)")
+			atan_mult *= val
+
+	if debug_mode:
+		print("Checknode gallager (L_i_j, format: (-1)^|N(i)|*2*tanh^-1(product of (j'\in N(i)\j))(tanh(L_j'_i/2))): ")
+		print("L_("+str(i)+"->"+str(j)+") = -1^"+str(len(N))+"*2*tanh^-1*("+str(product_str)+") = "+str(temp * math.atanh(atan_mult)))
+
 
 	return temp * math.atanh(atan_mult)
 
