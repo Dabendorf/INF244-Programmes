@@ -8,7 +8,7 @@ import math
 import matplotlib.pyplot as plt
 from scipy.stats import norm
 
-def gallager(G: np.ndarray, H: np.ndarray, r: List[int], prob:float) -> List[int]:
+def gallager(G: np.ndarray, H: np.ndarray, r: List[int], prob:float, debug_mode = False) -> List[int]:
 	""" Gallagers sum product algorithm for AWGN
 		G: matrix G of size nxk
 		H: parity check matrix of size nxh
@@ -284,14 +284,19 @@ def mldecoder(G, r, comb):
 	return best_vhat
 
 # Usage
-# python LDPCdecoderBSC.py systematic paritycheck sequence probability
-# python LDPCdecoderBSC.py G H r prob
-# python LDPCdecoderBSC.py G.csv H.csv 011010101 0.3
+# python LDPCdecoderBSC.py systematic paritycheck sequence probability debug_mode
+# python LDPCdecoderBSC.py G H r prob debug_mode
+# python LDPCdecoderBSC.py G.csv H.csv 011010101 0.3 True
 def main():
 	G = np.loadtxt(sys.argv[1], delimiter=",", dtype=float)
 	H = np.loadtxt(sys.argv[2], delimiter=",", dtype=float)
 	seq = sys.argv[3]
 	prob = float(sys.argv[4])
+	dm_str = sys.argv[5]
+	if dm_str == "True":
+		debug_mode = True
+	else:
+		debug_mode = False
 
 	# Globally make a list of all possible binary combinations of size k (2^k)
 	height_G = len(G)
@@ -324,12 +329,12 @@ def main():
 	print("Sequence: "+str(r))
 
 	# Gallager decoding
-	vhat__gallager = gallager(G, H, r, prob)
+	vhat__gallager = gallager(G, H, r, prob, debug_mode=debug_mode)
 	print("vhat gallager")
 	print(vhat__gallager)
 	
 	# MinSum decoding
-	vhat_minsum = minSum(G, H, r, prob, debug_mode=False)
+	vhat_minsum = minSum(G, H, r, prob, debug_mode=debug_mode)
 	print("vhat minsum")
 	print(vhat_minsum)
 

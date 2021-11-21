@@ -8,7 +8,7 @@ import math
 import matplotlib.pyplot as plt
 from scipy.stats import norm
 
-def gallager(G: np.ndarray, H: np.ndarray, r: List[int], N0: float, debug_mode = False) -> List[int]:
+def gallager(G: np.ndarray, H: np.ndarray, r: List[int], prob:float, debug_mode = False) -> List[int]:
 	""" Gallagers sum product algorithm for AWGN
 		G: matrix G of size nxk
 		H: parity check matrix of size nxh
@@ -16,7 +16,6 @@ def gallager(G: np.ndarray, H: np.ndarray, r: List[int], N0: float, debug_mode =
 		N0: channel noise
 		(Ec = 1)
 	"""
-
 	# Length of message
 	n = len(r)
 
@@ -32,16 +31,22 @@ def gallager(G: np.ndarray, H: np.ndarray, r: List[int], N0: float, debug_mode =
 	L_i_j = dict()
 	vhat = dict()
 	L_j_tot = dict()
+
+	num_dict = {("tanh", 10*10):1, ("tanh", -10*10):-1, ("arctanh", 1):10*10, ("arctanh", -1):-10*10}
 	for j in range(n):
 		# AWGN
-		L_j[j] = ((4*1)/N0)*r[j]
+		# L_j[j] = (((4*1)/N0)*r[j])
+		# BSC
+		#a = ((-1) ** r[j])
+		#b = math.log(prob/(1-prob))
+		#L_j[j] = a * b
 		# BEC
-		"""if r[j] == 0:
-			L_j[j] = -10000
+		if r[j] == 0:
+			L_j[j] = -10**10
 		elif r[j] == 1:
-			L_j[j] = 10000
+			L_j[j] = 10**10
 		else:
-			L_j[j] = 0"""
+			L_j[j] = 0
 
 		for i in M_dict[j]:
 			L_j_i[(j, i)] = L_j[j]
@@ -145,7 +150,7 @@ def calc_non_zero(H: np.ndarray) -> Tuple[int, int]:
 
 	return non_zero_list
 
-def minSum(G: np.ndarray, H: np.ndarray, r: List[int], N0: float, debug_mode = False) -> List[int]:
+def minSum(G: np.ndarray, H: np.ndarray, r: List[int], N0: float, prob: float, debug_mode = False) -> List[int]:
 	""" Min sum algorithm algorithm for AWGN
 		Only difference to Gallager is a different function for check node computation
 		G: matrix G of size nxk
@@ -172,8 +177,9 @@ def minSum(G: np.ndarray, H: np.ndarray, r: List[int], N0: float, debug_mode = F
 	L_j_tot = dict()
 	for j in range(n):
 		# AWGN
-		L_j[j] = ((4*1)/N0)*r[j] # change for task 4
-		# BEC
+		# L_j[j] = (((4*1)/N0)*r[j])
+		# BSC
+		L_j[j] = (-1) ** r[j] * math.log(prob/(1-prob))
 		"""if r[j] == 0:
 			L_j[j] = -10000
 		elif r[j] == 1:
@@ -280,16 +286,14 @@ def mldecoder(G, r, comb):
 	return best_vhat
 
 # Usage
-# G can actually be a dummy if no mhat decoding necessary
-# That will make max likelihood useless
-# python LDPCdecoderAWGN.py systematic paritycheck sequence N0 debug_mode
-# python LDPCdecoderAWGN.py G H r N0 debug_mode
-# python LDPCdecoderAWGN.py G.csv H4.csv -0.2S0.3S-1.2S0.5S-0.8S-0.6S1.1 4 True
+# python LDPCdecoderBEC.py systematic paritycheck sequence probability debug_mode
+# python LDPCdecoderBEC.py G H r prob debug_mode
+# python LDPCdecoderBEC.py G.csv H.csv 2211012102 0.3 True
 def main():
 	G = np.loadtxt(sys.argv[1], delimiter=",", dtype=float)
 	H = np.loadtxt(sys.argv[2], delimiter=",", dtype=float)
 	seq = sys.argv[3]
-	N0 = int(sys.argv[4])
+	prob = float(sys.argv[4])
 	dm_str = sys.argv[5]
 	if dm_str == "True":
 		debug_mode = True
@@ -315,8 +319,7 @@ def main():
 	# r = v
 
 	# To decode
-	awgn_list_temp = seq.split("S")
-	r = list(map(float, awgn_list_temp))
+	r = list(map(int, list(seq)))
 	# Task 4
 	# r = np.array([-0.2, 0.3, -1.2, 0.5, -0.8, -0.6, 1.1])
 	# Example lecture notes page 96
@@ -324,24 +327,23 @@ def main():
 	# N0 = 4
 
 	# Init
-	print("Mode: AWGN (NO = "+str(N0)+")")
-	print("With solution path: "+str(debug_mode))
+	print("Mode: BSC (prob = "+str(prob)+")")
 	print("Sequence: "+str(r))
 
 	# Gallager decoding
-	vhat__gallager = gallager(G, H, r, N0, debug_mode=debug_mode)
+	vhat__gallager = gallager(G, H, r, prob, debug_mode=debug_mode)
 	print("vhat gallager")
 	print(vhat__gallager)
 	
 	# MinSum decoding
-	vhat_minsum = minSum(G, H, r, N0, debug_mode=debug_mode)
+	vhat_minsum = minSum(G, H, r, prob, debug_mode=debug_mode)
 	print("vhat minsum")
 	print(vhat_minsum)
 
 	# Maximum-likelihood decoding
-	mhat_mldec = mldecoder(G, r, comb_list)
+	"""mhat_mldec = mldecoder(G, r, comb_list)
 	print("mhat max likelihood")
-	print(mhat_mldec)
+	print(mhat_mldec)"""
 
 if __name__ == "__main__":
 	main()
