@@ -53,7 +53,7 @@ def gallager(G: np.ndarray, H: np.ndarray, r: List[int], prob:float, debug_mode 
 		# for (i,j)
 		for (j, i) in non_empty_H_j_i:
 			# Compute L_i_j
-			L_i_j[(i, j)] = compute_checknode_gallager(N = N_dict[i], L_j_i = L_j_i, i=i, j=j)
+			L_i_j[(i, j)] = compute_checknode_gallager(N = N_dict[i], L_j_i = L_j_i, i=i, j=j, debug_mode=debug_mode)
 		
 		# Variable node update
 		# print(non_empty_H_j_i)
@@ -78,7 +78,7 @@ def gallager(G: np.ndarray, H: np.ndarray, r: List[int], prob:float, debug_mode 
 	mhat = vhat_list.dot(G_)
 	return mhat"""
 
-def compute_checknode_gallager(N: List[int], L_j_i, i: int, j: int):
+def compute_checknode_gallager(N: List[int], L_j_i, i: int, j: int, debug_mode=False):
 	"""Calculate the checknodes for the gallager algorithm"""
 	temp = (-1) ** len(N) * 2
 
