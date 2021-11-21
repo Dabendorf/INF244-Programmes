@@ -62,7 +62,7 @@ def gallager(G: np.ndarray, H: np.ndarray, r: List[int], N0: float, debug_mode =
 		# print(non_empty_H_j_i)
 		for (j, i) in non_empty_H_j_i:
 			# Compute L_j_tot, vhat_j and L_j_i
-			L_j_tot[j] = compute_l_j_tot(M = M_dict[j], L_i_j = L_i_j, j = j, Lj = L_j[j])
+			L_j_tot[j] = compute_l_j_tot(M = M_dict[j], L_i_j = L_i_j, j = j, Lj = L_j[j], debug_mode=debug_mode)
 			vhat[j] = (np.sign(L_j_tot[j])+1) / 2
 			L_j_i[(j, i)] = compute_l_j_i(M = M_dict[j], L_i_j = L_i_j, i = i, j = j, Lj = L_j[j])
 		
@@ -92,11 +92,17 @@ def compute_checknode_gallager(N: List[int], L_j_i, i: int, j: int):
 
 	return temp * math.atanh(atan_mult)
 
-def compute_l_j_tot(M: List[int], L_i_j, j: int, Lj: float):
+def compute_l_j_tot(M: List[int], L_i_j, j: int, Lj: float, debug_mode=False):
 	"""Calculates l_j^tot for a given L_j"""
 	sum = 0
+	debug_str = "L_"+str(j)+"^tot = "+str(Lj)
 	for i in M:
+		debug_str += " + "+str(L_i_j[(i, j)])
 		sum += L_i_j[(i, j)]
+
+	if debug_mode:
+		debug_str += " = "+str(sum + Lj)
+		print(debug_str)
 
 	return sum + Lj
 
@@ -179,7 +185,7 @@ def minSum(G: np.ndarray, H: np.ndarray, r: List[int], N0: float, debug_mode = F
 	
 	codeword = False
 	if debug_mode:
-		print("Initial variable nodes: ")
+		print("Initial variable nodes (L_v-matrix; index: (x,y)=(width,height)): ")
 		print(L_j_i)
 	counter = 0
 	while not codeword:
@@ -192,17 +198,17 @@ def minSum(G: np.ndarray, H: np.ndarray, r: List[int], N0: float, debug_mode = F
 			L_i_j[(i, j)] = compute_checknode_minsum(N = N_dict[i], L_j_i = L_j_i, i=i, j=j, debug_mode=debug_mode)
 		
 		if debug_mode:
-			print("Check nodes: ")
+			print("Check nodes (L_c-matrix; index: (x,y)=(height,width) (index swapped)): ")
 			print(L_i_j)
 		# Variable node update
 		for (j, i) in non_empty_H_j_i:
 			# Compute L_j_tot, vhat_j and L_j_i
-			L_j_tot[j] = compute_l_j_tot(M = M_dict[j], L_i_j = L_i_j, j = j, Lj = L_j[j])
+			L_j_tot[j] = compute_l_j_tot(M = M_dict[j], L_i_j = L_i_j, j = j, Lj = L_j[j], debug_mode=debug_mode)
 			vhat[j] = (np.sign(L_j_tot[j])+1) / 2
 			L_j_i[(j, i)] = compute_l_j_i(M = M_dict[j], L_i_j = L_i_j, i = i, j = j, Lj = L_j[j])
 		
 		if debug_mode:
-			print("Variable nodes: ")
+			print("Variable nodes (L_v-matrix; index: (x,y)=(width,height)): ")
 			print(L_j_i)
 			print("L_j_tot: ")
 			print(np.array([L_j_tot[key] for key in sorted(L_j_tot.keys())]))
@@ -238,7 +244,7 @@ def compute_checknode_minsum(N: List[int], L_j_i, i: int, j: int, debug_mode = F
 			list_val.append(abs(L_j_i[(j2, i)]))
 
 	if debug_mode:
-		print("Check node minsum: ")
+		print("Checknode minsum (L_i_j, format: (-1)^|N(i)|*min(j'\in N(i)\j)*product over signs of these neighbours): ")
 		print("L_("+str(i)+"->"+str(j)+") = -1^"+str(len(N))+"*min("+str(list_val)+str(str_signs)+" = "+str(temp * min(list_val) * mult))
 
 	return temp * min(list_val) * mult
