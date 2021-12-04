@@ -248,8 +248,8 @@ class Viterbi:
 	def error_metric(self, r, tested_sequence, mode: str) -> int:
 		""" Takes two sequences, outputs the error metric result
 			BSC: it is just an integer how many bits are wrong
-			BEC: 
-			AWGN:
+			BEC: count erased bits and adds infinity if not erased but wrong
+			AWGN: sum of squared errors
 		"""
 		print("Error metric")
 		print("Received: "+str(r))
