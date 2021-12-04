@@ -175,6 +175,7 @@ def main():
 		num += ("0" * abs(diff_g_len))
 
 	perm = permute(seq = list(m), perm = list(permuter))
+	print("Permuted message: "+str(perm))
 
 	# Normal convolutional encoder
 	conv1 = ConvEncoder(num=int(num, 2), denom=int(denom, 2), input=m, mem_len=len(num)-1)
