@@ -63,4 +63,19 @@ python LDPCdecoderBSC.py G.csv H_bec_lecturenotes.csv 011111 0.25 True
 # python LDPCdecoderBEC.py systematic paritycheck sequence probability debug_mode
 # python LDPCdecoderBEC.py G H r prob debug_mode
 python LDPCdecoderBEC.py G.csv H_bec_lecturenotes.csv 020212 0.25 True
+
 ##########################################################
+### Polar codes
+# input param is the amount of iterations
+# python3 PolarCodes.py 3
+----------------------------------------------------------
+### Polarise
+# Calculate the probabilities of erasure probability in all channels
+# Input is initial erasure probability
+echo 0.3 | ./polarise
+echo 0.3 | ./polarise | ./polarise
+----------------------------------------------------------
+### PolariseExp
+# Prints calculation path
+echo p | ./polariseExp
+echo p | ./polariseExp | ./polariseExp
